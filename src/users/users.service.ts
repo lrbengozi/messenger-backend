@@ -8,8 +8,8 @@ import { User, UserDocument } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-  create(createUserDto: CreateUserDto) {
-    const user = this.userModel
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.userModel
       .findOne({
         email: createUserDto.email,
       })
@@ -23,16 +23,16 @@ export class UsersService {
     throw new ForbiddenException('This e-mail already exists');
   }
 
-  findAll() {
-    return this.userModel.find();
+  async findAll() {
+    return await this.userModel.find();
   }
 
-  findOne(id: string) {
-    return this.userModel.findById(id);
+  async findOne(id: string) {
+    return await this.userModel.findById(id);
   }
 
-  getByEmail(email: string) {
-    return this.userModel.findOne({ email }).exec();
+  async getByEmail(email: string) {
+    return await this.userModel.findOne({ email }).exec();
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
