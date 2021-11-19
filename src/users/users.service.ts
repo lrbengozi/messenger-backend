@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,8 +9,18 @@ import { User, UserDocument } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
   create(createUserDto: CreateUserDto) {
-    const user = new this.userModel(createUserDto);
-    return user.save();
+    const user = this.userModel
+      .findOne({
+        email: createUserDto.email,
+      })
+      .exec();
+
+    if (!user) {
+      const newUser = new this.userModel(createUserDto);
+      return newUser.save();
+    }
+
+    throw new ForbiddenException('This e-mail already exists');
   }
 
   findAll() {
@@ -19,6 +29,10 @@ export class UsersService {
 
   findOne(id: string) {
     return this.userModel.findById(id);
+  }
+
+  getByEmail(email: string) {
+    return this.userModel.findOne({ email }).exec();
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
