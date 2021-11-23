@@ -17,7 +17,7 @@ import { jwtConstants } from './constants';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '600s' },
+      signOptions: { expiresIn: '6000s' },
     }),
   ],
   controllers: [AuthController],
